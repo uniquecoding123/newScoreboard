@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="scoreApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Scoreboard App</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+    <style>
+        body {
+    font-family: 'Arial', sans-serif;
+    background-color: #fefefe; /* Change background to a solid color for better contrast */
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex; /* Use flexbox for layout */
+}
+
+.container {
+    max-width: 800px;
+    width: 90%; /* Use a percentage for responsiveness */
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: white;
+}
+
+h2, h3 {
+    color: #ff5722; /* A shade of orange */
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+input:focus {
+    border-color: #ff5722; /* Highlighting on focus */
+    outline: none;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #ff5722; /* Orange button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: bold;
+    width: 100%; /* Full width for buttons */
+}
+
+button:hover {
+    background-color: #e64a19; /* Darker shade of orange on hover */
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #fafafa;
+    display: flex;
+    justify-content: space-between; /* Align player name and score */
+    align-items: center; /* Center align vertically */
+}
+
+.player-score {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+}
+
+p {
+    margin: 15px 0;
+    text-align: center; /* Center-align text */
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+    .container {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    h2 {
+        font-size: 1.8em;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .image-left {
+        height: 300px; /* Adjusted height for smaller screens */
+    }
+}
+
+.navbar {
+    margin-bottom: 20px;
+    text-align: center; /* Center navbar links */
+}
+
+.navbar a {
+    margin-right: 15px;
+    text-decoration: none;
+    color: #ff5722; /* Orange color for links */
+    font-weight: bold;
+}
+
+.navbar a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+.team-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.team-name {
+    font-weight: bold;
+    color: #ff5722; /* Team names in orange */
+}
+
+.team-score {
+    font-size: 1.2em;
+    color: #333;
+}
+
+/* Image styles */
+.image-left {
+    width: 50%; /* Make the image responsive */
+    max-width: 968px; /* Maintain a maximum width */
+    height: auto; /* Maintain aspect ratio */
+    opacity: 0.78;
+    background-image: url(https://th.bing.com/th/id/OIP.wibWY-pOC2kYX2sPp6Sm1AHaKi?w=186&h=265&c=7&r=0&o=5&dpr=1.6&pid=1.7);
+    background-size: cover; /* Cover the entire area */
+    background-repeat: no-repeat;
+    margin-bottom: 20px; /* Space below the image */
+}
+
+
+    </style>
+</head>
+<body>
+<p class="image-left"></p>
+<div class="container">
+    <div class="navbar">
+        <a href="#!/login">Login</a>
+        <a href="#!/register">Register</a>
+        <a href="#!/players">Add Players</a>
+        <a href="#!/team-stats">Team Stats</a>
+    </div>
+    <ng-view></ng-view>
+</div>
+
+<script>
+    var app = angular.module('scoreApp', ['ngRoute']);
+
+    app.config(function($routeProvider) {
+        $routeProvider
+            .when('/', {
+                template: `<h2>Welcome to the Scoreboard App!</h2>`,
+                controller: 'MainController'
+            })
+            .when('/login', {
+                template: `
+                    <h2>Login</h2>
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" ng-model="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" ng-model="password">
+                    </div>
+                    <button ng-click="login()">Login</button>
+                    <p>Don't have an account? <a href="#!/register">Register here</a></p>
+                `,
+                controller: 'LoginController'
+            })
+            .when('/register', {
+                template: `
+                    <h2>Register</h2>
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" ng-model="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" ng-model="password">
+                    </div>
+                    <button ng-click="register()">Register</button>
+                    <p>Already have an account? <a href="#!/login">Login here</a></p>
+                `,
+                controller: 'RegisterController'
+            })
+            .when('/players', {
+                template: `
+                    <h2>Players</h2>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" ng-model="newPlayer.name">
+                    </div>
+                    <div class="form-group">
+                        <label for="score">Score</label>
+                        <input type="number" id="score" ng-model="newPlayer.score">
+                    </div>
+                    <button ng-click="addPlayer()">Add Player</button>
+
+                    <h3>Player List</h3>
+                    <ul>
+                        <li ng-repeat="player in players">
+                            {{ player.name }} - {{ player.score }}
+                        </li>
+                    </ul>
+                    <p>Want to see team stats? <a href="#!/team-stats">View Team Stats</a></p>
+                `,
+                controller: 'PlayersController'
+            })
+            .when('/team-stats', {
+                template: `
+                    <h2>Team Stats</h2>
+                    <div class="form-group">
+                        <label for="team1_name">Team 1 Name</label>
+                        <input type="text" id="team1_name" ng-model="newTeamStat.team1_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="team1_wins">Team 1 Wins</label>
+                        <input type="number" id="team1_wins" ng-model="newTeamStat.team1_wins">
+                    </div>
+                    <div class="form-group">
+                        <label for="team2_name">Team 2 Name</label>
+                        <input type="text" id="team2_name" ng-model="newTeamStat.team2_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="team2_wins">Team 2 Wins</label>
+                        <input type="number" id="team2_wins" ng-model="newTeamStat.team2_wins">
+                    </div>
+                    <button ng-click="addTeamStats()">Add Team Stats</button>
+
+                    <h3>Team Stats List</h3>
+                    <ul>
+                        <li ng-repeat="stat in teamStats">
+                            {{ stat.team1_name }}  VS {{ stat.team2_name }} -- Wins: {{ stat.team1_wins }} || {{ stat.team2_wins }}
+                        </li>
+                    </ul>
+                    <p>Want to manage players? <a href="#!/players">Go to Players</a></p>
+                `,
+                controller: 'TeamStatsController'
+            })
+            .otherwise({
+                redirectTo: '/'
+            });
+    });
+
+    app.controller('MainController', function($scope) {
+        $scope.token = '';
+    });
+
+    app.controller('LoginController', function($scope, $http, $location) {
+        $scope.username = '';
+        $scope.password = '';
+
+        $scope.login = function() {
+            $http.post('http://localhost:5000/login', {
+                username: $scope.username,
+                password: $scope.password
+            }).then(function(response) {
+                $scope.$parent.token = response.data.access_token;
+                $location.path('/players');
+            }, function(error) {
+                alert('Login failed!');
+            });
+        };
+    });
+
+    app.controller('RegisterController', function($scope, $http, $location) {
+        $scope.username = '';
+        $scope.password = '';
+
+        $scope.register = function() {
+            $http.post('http://localhost:5000/register', {
+                username: $scope.username,
+                password: $scope.password
+            }).then(function(response) {
+                alert('Registration successful! Please log in.');
+                $location.path('/login');
+            }, function(error) {
+                alert('Registration failed!');
+            });
+        };
+    });
+
+    app.controller('PlayersController', function($scope, $http) {
+        $scope.players = [];
+        $scope.newPlayer = {
+            name: '',
+            score: ''
+        };
+
+        $scope.fetchPlayers = function() {
+            $http.get('http://localhost:5000/players', {
+                headers: { 'Authorization': 'Bearer ' + $scope.$parent.token }
+            }).then(function(response) {
+                $scope.players = response.data;
+            }, function(error) {
+                alert('Failed to fetch players!');
+            });
+        };
+
+        $scope.addPlayer = function() {
+            $http.post('http://localhost:5000/players', $scope.newPlayer, {
+                headers: { 'Authorization': 'Bearer ' + $scope.$parent.token }
+            }).then(function(response) {
+                $scope.players.push(response.data);
+                $scope.newPlayer.name = '';
+                $scope.newPlayer.score = '';
+            }, function(error) {
+                alert('Failed to add player!');
+            });
+        };
+
+        // Fetch players when the controller loads
+        $scope.fetchPlayers();
+    });
+
+    app.controller('TeamStatsController', function($scope, $http) {
+        $scope.teamStats = [];
+        $scope.newTeamStat = {
+            team1_name: '',
+            team1_wins: '',
+            team2_name: '',
+            team2_wins: ''
+        };
+
+        $scope.fetchTeamStats = function() {
+            $http.get('http://localhost:5000/team', {
+                headers: { 'Authorization': 'Bearer ' + $scope.$parent.token }
+            }).then(function(response) {
+                $scope.teamStats = response.data;
+            }, function(error) {
+                alert('Failed to fetch team stats!');
+            });
+        };
+
+        $scope.addTeamStats = function() {
+            $http.post('http://localhost:5000/team', $scope.newTeamStat, {
+                headers: { 'Authorization': 'Bearer ' + $scope.$parent.token }
+            }).then(function(response) {
+                $scope.teamStats.push(response.data);
+                $scope.newTeamStat.team1_name = '';
+                $scope.newTeamStat.team1_wins = '';
+                $scope.newTeamStat.team2_name = '';
+                $scope.newTeamStat.team2_wins = '';
+            }, function(error) {
+                alert('Failed to add team stats!');
+            });
+        };
+
+        // Fetch team stats when the controller loads
+        $scope.fetchTeamStats();
+    });
+</script>
+
+</body>
+</html>
